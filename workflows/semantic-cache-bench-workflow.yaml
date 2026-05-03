@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: aurekai-semantic-cache-bench-
+  labels:
+    aurekai.io/template: "semantic-cache-bench"
+spec:
+  entrypoint: run
+  templates:
+    - name: run
+      container:
+        image: ghcr.io/aurekai/aurekai:0.8.0-alpha.4
+        command: ["/bin/sh", "-c"]
+        args: ["akai cache bench --queries 100 --json"]

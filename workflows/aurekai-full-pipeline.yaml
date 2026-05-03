@@ -1,0 +1,32 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: aurekai-full-pipeline-
+spec:
+  entrypoint: pipeline
+  templates:
+    - name: pipeline
+      dag:
+        tasks:
+          - name: doctor-deep
+            template: akai-cmd
+            arguments:
+              parameters: [{name: cmd, value: "akai doctor --deep --json"}]
+          - name: manifest-verify
+            template: akai-cmd
+            dependencies: [doctor-deep]
+            arguments:
+              parameters: [{name: cmd, value: "akai verify --manifest artifact.json --json"}]
+          - name: release-gate
+            template: akai-cmd
+            dependencies: [manifest-verify]
+            arguments:
+              parameters: [{name: cmd, value: "akai release gate --version 0.8.0-alpha.4 --json"}]
+    - name: akai-cmd
+      inputs:
+        parameters:
+          - name: cmd
+      container:
+        image: ghcr.io/aurekai/aurekai:0.8.0-alpha.4
+        command: ["/bin/sh", "-c"]
+        args: ["{{inputs.parameters.cmd}}"]
