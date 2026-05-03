@@ -1,0 +1,14 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Workflow
+metadata:
+  generateName: aurekai-release-gate-
+  labels:
+    aurekai.io/template: "release-gate"
+spec:
+  entrypoint: run
+  templates:
+    - name: run
+      container:
+        image: ghcr.io/aurekai/aurekai:0.8.0-alpha.4
+        command: ["/bin/sh", "-c"]
+        args: ["akai release gate --version 0.8.0-alpha.4 --json"]
